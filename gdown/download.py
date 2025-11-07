@@ -210,8 +210,9 @@ def download(
             continue
 
         if res.headers["Content-Type"].startswith("text/html"):
-            m = re.search("<title>(.+)</title>", res.text)
-            if m and m.groups()[0].endswith(" - Google Docs"):
+            # Detect document type from URL pattern (language-independent)
+            # instead of page title which varies by language
+            if "/document/" in res.url or "/document/d/" in url:
                 url = (
                     "https://docs.google.com/document/d/{id}/export"
                     "?format={format}".format(
@@ -220,7 +221,7 @@ def download(
                     )
                 )
                 continue
-            elif m and m.groups()[0].endswith(" - Google Sheets"):
+            elif "/spreadsheets/" in res.url or "/spreadsheets/d/" in url:
                 url = (
                     "https://docs.google.com/spreadsheets/d/{id}/export"
                     "?format={format}".format(
@@ -229,7 +230,7 @@ def download(
                     )
                 )
                 continue
-            elif m and m.groups()[0].endswith(" - Google Slides"):
+            elif "/presentation/" in res.url or "/presentation/d/" in url:
                 url = (
                     "https://docs.google.com/presentation/d/{id}/export"
                     "?format={format}".format(
